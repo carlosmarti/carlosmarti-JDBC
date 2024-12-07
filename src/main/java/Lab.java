@@ -2,6 +2,7 @@
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,12 +39,39 @@ public class Lab {
 
     public void createSong(Song song)  {
         //write jdbc code here
+        String sql = "Insert Into songs(title, artist) Values (?,?)";
+        //Connect to database
+        try{
+            Connection con = ConnectionUtil.getConnection();
+            PreparedStatement pStatement = con.prepareStatement(sql);
+            pStatement.setString(1, song.gettitle());
+            pStatement.setString(2, song.getArtist());
+            Boolean rs = pStatement.execute();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+
     }
 
     public List<Song> getAllSongs(){
         List<Song> songs = new ArrayList<>();
 
         //write jdbc code here
+        String sql = "Select * From songs";
+
+        try{
+            Connection con = ConnectionUtil.getConnection();
+            Statement st = con.createStatement();
+            ResultSet rSet = st.executeQuery(sql);
+
+            while(rSet.next()){
+                songs.add(new Song(rSet.getInt("id"), rSet.getString("title"), rSet.getString("artist")));
+            }
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
 
         return songs;
     }
